@@ -1,0 +1,31 @@
+import RPi.GPIO as GPIO
+import time
+
+# 定義 A4988 的步進訊號（STEP）和方向訊號（DIR）
+STEP_PIN = 17
+DIR_PIN = 18
+
+# 設定馬達轉動的步進數
+STEPS_PER_REVOLUTION = 200  # NEMA 17 通常每圈 200 步
+
+def setup_motor():
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(STEP_PIN, GPIO.OUT)
+    GPIO.setup(DIR_PIN, GPIO.OUT)
+    GPIO.output(DIR_PIN, GPIO.HIGH)  # 設定為順時針轉動
+
+def rotate_motor():
+    while True:
+        # 發送步進脈衝信號
+        GPIO.output(STEP_PIN, GPIO.HIGH)
+        time.sleep(0.001)  # 控制步進訊號的高電位持續時間
+        GPIO.output(STEP_PIN, GPIO.LOW)
+        time.sleep(0.001)  # 控制步進訊號的低電位持續時間
+
+if __name__ == "__main__":
+    setup_motor()  # 設定 GPIO 腳位
+    try:
+        rotate_motor()  # 持續讓馬達旋轉
+    except KeyboardInterrupt:
+        GPIO.cleanup()  # 停止時清理 GPIO 設定
